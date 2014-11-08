@@ -9,9 +9,9 @@ public class ForecastValueModel {
 
     private String flags;
 
-    private double value;
+    private int value;
 
-    public ForecastValueModel(String notes, String flags, double value) {
+    public ForecastValueModel(String notes, String flags, int value) {
         this.notes = notes;
         this.flags = flags;
         this.value = value;
@@ -33,11 +33,11 @@ public class ForecastValueModel {
         this.flags = flags;
     }
 
-    public double getValue() {
+    public int getValue() {
         return value;
     }
 
-    public void setValue(double value) {
+    public void setValue(int value) {
         this.value = value;
     }
 

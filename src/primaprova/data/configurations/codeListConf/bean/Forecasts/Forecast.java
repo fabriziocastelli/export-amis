@@ -78,13 +78,18 @@ public class Forecast {
             String commodityCode = ""+row[commodityIndex];
             String date = ""+row[dateIndex];
 
-            if(! this.unorderedMap.containsKey(commodityCode) && !unorderedMap.get(commodityCode).containsKey(date)) {
+            if(! this.unorderedMap.containsKey(commodityCode)  || (this.unorderedMap.containsKey(commodityCode) &&
+                    !this.unorderedMap.get(commodityCode).containsKey(date)) ){
                 LinkedHashMap<String, LinkedHashMap<String, ForecastValueModel>> semiMap =
                         createTempMap(data, commodityCode, date, commodityIndex, dateIndex);
 
                 unorderedMap.put(commodityCode, semiMap);
             }
         }
+
+        LOGGER.info("***************************************");
+        LOGGER.info("UNORDERED MAP");
+        LOGGER.info(unorderedMap);
 
     }
 
@@ -98,16 +103,33 @@ public class Forecast {
         int flagsIndex = Integer.parseInt(this.prop.getProperty("flags"));
         int notesIndex = Integer.parseInt(this.prop.getProperty("notes"));
 
-
         for (Object[] row : data) {
 
-            if(row[commodityIndex].equals(commodityCode) && row[dateIndex].equals(date)){
-                ForecastValueModel valueModel = new ForecastValueModel(""+row[notesIndex],""+ row[flagsIndex], +(Double)row[valueIndex]);
+
+            if(((Integer)row[commodityIndex]).equals(Integer.parseInt(commodityCode)) && ((String)row[dateIndex]).equals(date)){
+                int value = -1;
+                if(row[valueIndex] != null){
+                  value = (Integer)row[valueIndex];
+              }
+                else{
+                     value = -1;
+                }
+                LOGGER.info(" "+row[notesIndex]+ ", "+ row[flagsIndex]+" ,"+ value);
+                ForecastValueModel valueModel = new ForecastValueModel(""+row[notesIndex],""+ row[flagsIndex], value);
                 tempMap.put(""+row[codeIndex],valueModel);
             }
         }
 
         LinkedHashMap<String, LinkedHashMap<String, ForecastValueModel>> result =  new LinkedHashMap<String, LinkedHashMap<String, ForecastValueModel>>();
+        LOGGER.info("--------------------------------------");
+        LOGGER.info("TEMPORARY MAP");
+        LOGGER.info(tempMap);
+
+        LOGGER.info("--------------------------------------");
+        LOGGER.info("DATE");
+
+        LOGGER.info(date);
+
         result.put(date, tempMap);
 
         return result;

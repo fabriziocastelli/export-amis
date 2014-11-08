@@ -74,7 +74,7 @@ public class AMISQuery {
              LOGGER.info("*****************************************");
              LOGGER.info("FOOD BALANCE ELEMENTS");
 
-             LOGGER.info( this.foodBalanceElements.toString());
+           //  LOGGER.info( this.foodBalanceElements.toString());
          }
 
 
@@ -93,7 +93,7 @@ public class AMISQuery {
              LOGGER.info("*****************************************");
              LOGGER.info("ITY ELEMENTS");
 
-             LOGGER.info(this.ityElements.toString());
+           //  LOGGER.info(this.ityElements.toString());
 
          }
 
@@ -113,7 +113,7 @@ public class AMISQuery {
              dataUtils.fillMap(this.otherElements,COMMODITIES,MAIZE_AND_WHEAT_FOOD,RICE_FOOD,SOYBEANS_FOOD, prop);
 
 
-             LOGGER.info(this.otherElements.toString());
+         //    LOGGER.info(this.otherElements.toString());
 
          }
     }
