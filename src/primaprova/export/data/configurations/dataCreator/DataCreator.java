@@ -22,6 +22,7 @@ public class DataCreator {
 
 
     public void initData() {
+
         this.data = new Object[][]
                 {
                         {1,"2013-07-15",20,6700,"",""},
@@ -239,7 +240,7 @@ public class DataCreator {
 
         this.country = "Argentina";
         this.datasource="DS Argentina";
-        this.season = "2024/15";
+        this.season = "2014/15";
 
     }
 

@@ -38,8 +38,7 @@ public class LoanCalculator {
     public static void main(String[] args) throws Exception {
         Workbook wb;
 
-        if(args.length > 0 && args[0].equals("-xls")) wb = new HSSFWorkbook();
-        else wb = new XSSFWorkbook();
+         wb = new XSSFWorkbook();
 
         Map<String, CellStyle> styles = createStyles(wb);
         Sheet sheet = wb.createSheet("Loan Calculator");
@@ -81,7 +80,6 @@ public class LoanCalculator {
         cell.setCellStyle(styles.get("item_left"));
         cell = row.createCell(4);
         cell.setCellStyle(styles.get("input_$"));
-        cell.setAsActiveCell();
 
         row = sheet.createRow(4);
         cell = row.createCell(2);

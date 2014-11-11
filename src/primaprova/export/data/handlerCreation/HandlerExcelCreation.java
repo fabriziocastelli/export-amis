@@ -7,12 +7,15 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import primaprova.excel.utils.config.AmisExcelUtils;
 import primaprova.excel.utils.config.SheetCreator;
 import primaprova.export.data.configurations.dataCreator.DataCreator;
+import primaprova.export.data.daoValue.DaoForecastValue;
 import primaprova.export.data.forecast.Forecast;
 import primaprova.export.data.query.AMISQuery;
 import primaprova.export.data.utils.codelist.CommodityParser;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * Created by fabrizio on 11/10/14.
@@ -54,7 +57,25 @@ public class HandlerExcelCreation {
 
             int rowCounter = 0;
 
-            this.sheetCreator.createSummary(rowCounter, sheet, workbook, dataModel, commodityLabel);
+            rowCounter = this.sheetCreator.createSummary(rowCounter, sheet, workbook, dataModel, commodityLabel);
+
+            rowCounter = this.sheetCreator.createSheetTitle(rowCounter,sheet,workbook);
+
+            // FoodBalance
+
+            LinkedHashMap<String, LinkedHashMap<String, DaoForecastValue>> foodBalanceResults = forecast.getFoodBalanceResults().get(commodityString);
+
+            rowCounter = this.sheetCreator.createHeadersGroup(rowCounter,sheet,workbook, foodBalanceResults, "foodBalance");
+
+            // list of elements to show on the left
+            HashMap< Integer, HashMap<Integer, String>> elements =  qvo.getFoodBalanceElements();
+
+            // put on the excel the elements and the values
+            rowCounter = this.sheetCreator.createDataTableGroup(rowCounter,sheet,workbook,elements.get(commodity), foodBalanceResults);
+
+
+
+
 
         }
 
