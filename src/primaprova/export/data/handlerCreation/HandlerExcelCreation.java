@@ -3,7 +3,6 @@ package primaprova.export.data.handlerCreation;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import primaprova.excel.utils.config.AmisExcelUtils;
 import primaprova.excel.utils.config.SheetCreator;
 import primaprova.export.data.configurations.dataCreator.DataCreator;
@@ -61,7 +60,9 @@ public class HandlerExcelCreation {
 
             rowCounter = this.sheetCreator.createSheetTitle(rowCounter,sheet,workbook);
 
-            // FoodBalance
+            /*
+                -------------------------    FoodBalance   -------------------------------------------------
+             */
 
             LinkedHashMap<String, LinkedHashMap<String, DaoForecastValue>> foodBalanceResults = forecast.getFoodBalanceResults().get(commodityString);
 
@@ -73,9 +74,36 @@ public class HandlerExcelCreation {
             // put on the excel the elements and the values
             rowCounter = this.sheetCreator.createDataTableGroup(rowCounter,sheet,workbook,elements.get(commodity), foodBalanceResults);
 
+            rowCounter++;
 
+              /*
+                -------------------------    ITY RESULTS   -------------------------------------------------
+             */
 
+            LinkedHashMap<String, LinkedHashMap<String, DaoForecastValue>> ityResults = forecast.getItyResults().get(commodityString);
 
+            rowCounter = this.sheetCreator.createHeadersGroup(rowCounter,sheet,workbook, ityResults, "international");
+
+            // list of elements to show on the left
+            HashMap< Integer, HashMap<Integer, String>> elementsITY =  qvo.getItyElements();
+
+            // put on the excel the elements and the values
+            rowCounter = this.sheetCreator.createDataTableGroup(rowCounter,sheet,workbook,elementsITY.get(commodity), ityResults);
+
+            rowCounter++;
+              /*
+                -------------------------    OTHERS   -------------------------------------------------
+             */
+
+            LinkedHashMap<String, LinkedHashMap<String, DaoForecastValue>> otherResults = forecast.getOtherResults().get(commodityString);
+
+            rowCounter = this.sheetCreator.createHeadersGroup(rowCounter,sheet,workbook, otherResults, "others");
+
+            // list of elements to show on the left
+            HashMap< Integer, HashMap<Integer, String>> elementsOTH =  qvo.getOtherElements();
+
+            // put on the excel the elements and the values
+            rowCounter = this.sheetCreator.createDataTableGroup(rowCounter,sheet,workbook,elementsOTH.get(commodity), otherResults);
 
         }
 

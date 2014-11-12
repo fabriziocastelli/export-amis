@@ -63,6 +63,7 @@ public class Forecast {
 
         int commodityIndex = Integer.parseInt(this.prop.getProperty("commodity"));
         int dateIndex = Integer.parseInt(this.prop.getProperty("date"));
+        int codeIndex = Integer.parseInt(this.prop.getProperty("code"));
 
 
         for (int commodity : COMMODITY_LIST) {
@@ -78,8 +79,13 @@ public class Forecast {
                     String date = "" + row[dateIndex];
 
 
-                    if (!this.unorderedMap.containsKey(commodityCode) || (this.unorderedMap.containsKey(commodityCode) &&
-                            !this.unorderedMap.get(commodityCode).containsKey(date))) {
+                    if (!this.unorderedMap.containsKey(commodityCode)
+                        || (this.unorderedMap.containsKey(commodityCode) &&
+                        !this.unorderedMap.get(commodityCode).containsKey(date)) ||
+                        (this.unorderedMap.containsKey(commodityCode) && this.unorderedMap.get(commodityCode).containsKey(date)
+                        && !this.unorderedMap.get(commodityCode).get(date).containsKey(row[codeIndex]))) {
+
+
                         LinkedHashMap<String, LinkedHashMap<String, DaoForecastValue>> temporary = createTempMap(data, commodityCode, date, commodityIndex, dateIndex);
                         semiMap.put(date, temporary.get(date));
 

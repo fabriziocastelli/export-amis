@@ -15,11 +15,11 @@ public class AMISQuery {
 
     private static final Logger LOGGER = Logger.getLogger(AMISQuery.class);
 
-    private static final int[] MAIZE_AND_WHEAT_FOOD ={19,18,5,7,35,20,13,14, 15,21,34,28,29,30,31,32,33 ,10, 16 ,1,2,4};
+    private static final int[] MAIZE_AND_WHEAT_FOOD ={19,18,5,7,27,35,20,13,14, 15,21,34,28,29,30,31,32,33 ,10, 16 ,1,2,4};
 
-    private static final int[] RICE_FOOD ={19,18,998,5,7,35,20,13,14, 15, 21,34,28,10, 16,1,2,4,3 };
+    private static final int[] RICE_FOOD ={19,18,998,5,7,27,35,20,13,14, 15, 21,34,28,10, 16,1,2,4,3 };
 
-    private static final int[] SOYBEANS_FOOD ={19,18,5,7,35,20,36,14, 15, 10, 16, 21,34,28,1,2,4 };
+    private static final int[] SOYBEANS_FOOD ={19,18,5,7,27,35,20,36,31,13,14, 15, 10, 16, 21,34,28,1,2,4 };
 
     private static final int[] COMMODITIES = {5,4,6,1};
 

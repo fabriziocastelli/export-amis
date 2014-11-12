@@ -6,10 +6,13 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import primaprova.export.data.configurations.dataCreator.DataCreator;
 import primaprova.export.data.daoValue.DaoForecastValue;
 import primaprova.export.data.formula.CellMapper;
+import primaprova.export.data.formula.bean.FormulaBean;
+import primaprova.export.data.formula.configurator.ConfigurationReader;
 import primaprova.export.data.query.AMISQuery;
 import org.apache.log4j.Logger;
 
@@ -22,6 +25,14 @@ import java.util.*;
 public class SheetCreator {
 
     private static final Logger LOGGER = Logger.getLogger(SheetCreator.class);
+
+    private static final String[] NATIONAL_CODES_FORMULAS = {"27","19","20"};
+
+    private String[] nationalCodes;
+
+    private  String FORMULA_URL ;
+
+    private ConfigurationReader configurationReader;
 
     private String commodityChosen;
 
@@ -91,7 +102,6 @@ public class SheetCreator {
 
         rowCounter = AmisExcelUtils.createEmptyRow(rowCounter, sheet, workbook);
 
-
         return rowCounter;
     }
 
@@ -104,6 +114,9 @@ public class SheetCreator {
 
         if (type == "foodBalance") {
             title = "National Marketing Year (NMY):";
+            this.nationalCodes = this.NATIONAL_CODES_FORMULAS;
+            this.FORMULA_URL = "formulaNational.properties";
+            this.configurationReader = new ConfigurationReader(FORMULA_URL);
         } else if (type == "international") {
             title = "International Trade Year (ITY):";
         } else {
@@ -118,9 +131,7 @@ public class SheetCreator {
         cell.setCellValue(title);
         columnNumber++;
 
-
         Set<String> dates = mapGroup.keySet();
-
 
         for (String date : dates) {
 
@@ -194,7 +205,7 @@ public class SheetCreator {
 
             int i=0;
 
-           datesList = new LinkedList<String>();
+            datesList = new LinkedList<String>();
 
             for (String date : dates) {
                 columnNumber = fillForecastElements(columnNumber,row,workbook,foodBalanceResults.get(date),code,sheet,date);
@@ -205,11 +216,12 @@ public class SheetCreator {
 
         }
 
-
+/*
         for(String date: datesList) {
-            provaFormula(date, "7", "5", sheet);
+            LinkedList<FormulaBean> formulaBeans = this.configurationReader.getFormulas(this.nationalCodes);
+            handleFormulas(formulaBeans,sheet,workbook,date);
         }
-
+*/
         return rowCounter;
     }
 
@@ -231,7 +243,7 @@ public class SheetCreator {
             }else {
                 cell.setCellValue(value);
             }
-            String indexLetter = CellReference.convertNumToColString(columnNumber) + ""+cell.getRowIndex();
+            String indexLetter = CellReference.convertNumToColString(columnNumber) + ""+(cell.getRowIndex()+1);
             cellMappers.putData(date,""+code,"value",indexLetter);
 
             columnNumber++;
@@ -241,7 +253,7 @@ public class SheetCreator {
             cell1.setCellStyle(AmisExcelUtils.getBasicCellStyle(workbook));
             cell1.setCellValue(forecast.getFlags());
 
-            String indexLetter1 = CellReference.convertNumToColString(columnNumber) + ""+cell.getRowIndex();
+            String indexLetter1 = CellReference.convertNumToColString(columnNumber) + ""+(cell.getRowIndex()+1);
             cellMappers.putData(date, "" + code, "flags", indexLetter1);
 
             columnNumber++;
@@ -252,7 +264,7 @@ public class SheetCreator {
             cell2.setCellValue(forecast.getNotes());
             sheet.autoSizeColumn(columnNumber);
 
-            String indexLetter2 = CellReference.convertNumToColString(columnNumber) + ""+cell.getRowIndex();
+            String indexLetter2 = CellReference.convertNumToColString(columnNumber) + ""+(cell.getRowIndex()+1);
             cellMappers.putData(date, "" + code, "notes", indexLetter2);
 
             columnNumber++;
@@ -264,7 +276,7 @@ public class SheetCreator {
             cell.setCellStyle(AmisExcelUtils.getBasicCellStyle(workbook));
             cell.setCellValue("");
 
-            String indexLetter = CellReference.convertNumToColString(columnNumber) + ""+cell.getRowIndex();
+            String indexLetter = CellReference.convertNumToColString(columnNumber) + ""+(cell.getRowIndex()+1);
             cellMappers.putData(date, "" + code, "value", indexLetter);
 
             columnNumber++;
@@ -274,7 +286,7 @@ public class SheetCreator {
             cell1.setCellStyle(AmisExcelUtils.getBasicCellStyle(workbook));
             cell1.setCellValue("");
 
-            String indexLetter1 = CellReference.convertNumToColString(columnNumber) + ""+cell.getRowIndex();
+            String indexLetter1 = CellReference.convertNumToColString(columnNumber) + ""+(cell.getRowIndex()+1);
             cellMappers.putData(date, "" + code, "flags", indexLetter1);
 
             columnNumber++;
@@ -284,7 +296,7 @@ public class SheetCreator {
             cell2.setCellStyle(AmisExcelUtils.getBasicCellStyle(workbook));
             cell2.setCellValue("");
 
-            String indexLetter2 = CellReference.convertNumToColString(columnNumber) + ""+cell.getRowIndex();
+            String indexLetter2 = CellReference.convertNumToColString(columnNumber) + ""+(cell.getRowIndex()+1);
             cellMappers.putData(date, "" + code, "notes", indexLetter2);
 
             columnNumber++;
@@ -295,28 +307,56 @@ public class SheetCreator {
     }
 
 
-    private void provaFormula(String date, String code1, String code, HSSFSheet sheet){
-
-        LOGGER.info("INIZIO FORMULA");
+    private void handleFormulas(LinkedList<FormulaBean> formulaBeans, HSSFSheet sheet, HSSFWorkbook wb, String date){
 
         LinkedHashMap<String,String> mapper = cellMappers.getMapCells();
 
-        String code1IndexValue = mapper.get(date+"-"+code1+"-"+"value");
+        for(FormulaBean formulaBean: formulaBeans){
+            String codeOperand = formulaBean.getOperand();
+            String operandCodeValue = mapper.get(date+"*"+codeOperand+"*"+"value");
+            String operandCodeFlags = mapper.get(date+"*"+codeOperand+"*"+"flags");
 
-        String code2IndexValue = mapper.get(date+"-"+code+"-"+"value");
-        Cell c1 = null;
+            LinkedList<String> addendumsCodes = new LinkedList<String>();
+            String operator = formulaBean.getOperator();
 
+            for (String addendum: formulaBean.getAddendums()){
+                addendumsCodes.add(mapper.get(date+"*"+addendum+"*"+"value"));
+            }
+            makeFormula(operandCodeFlags, operandCodeValue, operator, addendumsCodes, sheet);
 
+        }
+    }
 
-        CellReference ref2 = new CellReference(code1IndexValue);
-        Row r2 = sheet.getRow(ref2.getRow());
-        if (r2 != null) {
-             c1 = r2.getCell(ref2.getCol());
+    private void makeFormula(String operandCodeFlags, String operandCodeValue,
+                             String operator,  LinkedList<String> addendumsCodes,
+                             HSSFSheet sheet){
+
+        LOGGER.info("StartedMAKE FORMULA");
+
+        Cell operandCell = null;
+        CellReference referenceValue = new CellReference(operandCodeValue);
+        Row rowIndex = sheet.getRow(referenceValue.getRow());
+        if (rowIndex != null) {
+            operandCell = rowIndex.getCell(referenceValue.getCol());
         }
 
-        c1.setCellFormula(""+code2IndexValue+"*2");
+        String formula="";
 
+        int lengthAddendums = addendumsCodes.size();
+
+        int i= 0;
+        for(String addendumCode: addendumsCodes){
+            formula+=addendumCode;
+            if(i != lengthAddendums-1){
+                formula+=operator;
+            }
+            i++;
+        }
+
+        operandCell.setCellFormula(formula);
 
     }
+
+
 }
 
